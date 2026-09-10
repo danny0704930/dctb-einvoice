@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="360" viewBox="0 0 520 360" role="img" aria-labelledby="title desc">
+  <title id="title">Store receipt sample</title>
+  <desc id="desc">A store receipt sample showing receipt number, outlet, date, items, and total amount.</desc>
+  <rect width="520" height="360" fill="#f6f8fb"/>
+  <rect x="118" y="24" width="284" height="312" rx="10" fill="#ffffff" stroke="#d8e1e8"/>
+  <path d="M118 54 l14 -12 14 12 14 -12 14 12 14 -12 14 12 14 -12 14 12 14 -12 14 12 14 -12 14 12 14 -12 14 12 14 -12 14 12 14 -12 14 12 14 -12 14 12" fill="none" stroke="#d8e1e8" stroke-width="2"/>
+  <text x="260" y="78" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#16212a">STORE RECEIPT</text>
+  <text x="148" y="112" font-family="Arial, sans-serif" font-size="13" fill="#637381">Outlet</text>
+  <rect x="206" y="102" width="140" height="10" rx="5" fill="#e8eef2"/>
+  <text x="148" y="144" font-family="Arial, sans-serif" font-size="13" fill="#637381">Receipt No.</text>
+  <rect x="236" y="134" width="112" height="10" rx="5" fill="#14b8a6" opacity=".25"/>
+  <text x="148" y="176" font-family="Arial, sans-serif" font-size="13" fill="#637381">Date</text>
+  <rect x="206" y="166" width="98" height="10" rx="5" fill="#e8eef2"/>
+  <line x1="148" y1="202" x2="372" y2="202" stroke="#d8e1e8"/>
+  <rect x="148" y="224" width="206" height="8" rx="4" fill="#e8eef2"/>
+  <rect x="148" y="242" width="176" height="8" rx="4" fill="#e8eef2"/>
+  <rect x="148" y="260" width="194" height="8" rx="4" fill="#e8eef2"/>
+  <line x1="148" y1="286" x2="372" y2="286" stroke="#d8e1e8"/>
+  <text x="148" y="314" font-family="Arial, sans-serif" font-size="16" font-weight="700" fill="#16212a">Total</text>
+  <rect x="268" y="301" width="84" height="16" rx="8" fill="#0f766e" opacity=".25"/>
+</svg>

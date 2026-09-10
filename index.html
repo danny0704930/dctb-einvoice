@@ -1,12 +1,297 @@
-<!doctype html>
-<html lang="zh">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DCTB E-Invoice Request</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="zh-Hans" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DCTB e-Invoice Request</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-page="customer">
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="mark">EI</div>
+      <div>
+        <h1 data-i18n="customerTitle">DCTB e-Invoice Request</h1>
+        <div class="subtitle" data-i18n="customerSubtitle">提交资料后，我们会人工处理并通过 email 发给你。</div>
+      </div>
+    </div>
+    <div class="utility">
+      <div class="segmented" aria-label="Language">
+        <button type="button" data-lang="zh">中文</button>
+        <button type="button" data-lang="en">EN</button>
+      </div>
+      <div class="segmented" aria-label="Theme">
+        <button type="button" data-theme-choice="light" data-i18n="themeLight">白天</button>
+        <button type="button" data-theme-choice="dark" data-i18n="themeDark">暗色</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="notice" id="systemNotice"></div>
+  <div id="successBox" class="success-box"></div>
+
+  <main class="form-layout">
+    <form id="einvoiceForm" class="panel" novalidate>
+      <div class="panel-header">
+        <div>
+          <p class="panel-title" data-i18n="formTitle">e-Invoice 资料表</p>
+          <div class="panel-note" data-i18n="formNote">线上订单和线下门市都可以使用这份表格。</div>
+        </div>
+      </div>
+
+      <section class="section">
+        <p class="section-title" data-i18n="sourceSection">来源</p>
+        <div class="choice-row" role="radiogroup" aria-label="Request channel">
+          <label class="choice">
+            <input type="radio" name="channel" value="Online" checked>
+            <span data-i18n="onlineOrder">线上订单</span>
+          </label>
+          <label class="choice">
+            <input type="radio" name="channel" value="Offline">
+            <span data-i18n="offlineStore">线下门市</span>
+          </label>
+        </div>
+      </section>
+
+      <section class="section channel-block active" id="onlineBlock">
+        <div class="field" id="f-onlinePlatform">
+          <label><span data-i18n="salesPlatform">销售平台</span><span class="req">*</span></label>
+          <select name="onlinePlatform">
+            <option value="" data-i18n="selectOne">请选择</option>
+            <option>Website</option>
+            <option>Shopee</option>
+            <option>Lazada</option>
+            <option>TikTok Shop</option>
+            <option>Facebook / WhatsApp</option>
+            <option>Other</option>
+          </select>
+          <div class="err" data-i18n="salesPlatformErr">请选择销售平台</div>
+        </div>
+        <div class="field">
+          <label><span data-i18n="orderNoOptional">订单号 / Receipt No.</span><span class="opt" data-i18n="optional">选填</span></label>
+          <input name="orderNo" type="text" autocomplete="off">
+        </div>
+      </section>
+
+      <section class="section channel-block" id="offlineBlock">
+        <div class="field" id="f-outlet">
+          <label><span data-i18n="outlet">门市 / Event</span><span class="req">*</span></label>
+          <input name="outlet" type="text" autocomplete="organization" data-i18n-placeholder="outletPlaceholder" placeholder="例如 HQ Showroom / Mid Valley Booth">
+          <div class="err" data-i18n="outletErr">请填写门市或活动地点</div>
+        </div>
+        <div class="field">
+          <label><span data-i18n="receiptNo">Receipt No.</span><span class="opt" data-i18n="optional">选填</span></label>
+          <input name="receiptNo" type="text" autocomplete="off">
+        </div>
+      </section>
+
+      <section class="section">
+        <p class="section-title" data-i18n="buyerSection">买家资料</p>
+        <div class="grid">
+          <div class="field full">
+            <label><span data-i18n="buyerType">买家类型</span><span class="req">*</span></label>
+            <div class="choice-row">
+              <label class="choice">
+                <input type="radio" name="buyerType" value="Individual" checked>
+                <span data-i18n="individual">个人</span>
+              </label>
+              <label class="choice">
+                <input type="radio" name="buyerType" value="Company">
+                <span data-i18n="company">公司</span>
+              </label>
+            </div>
+          </div>
+          <div class="field" id="f-buyerName">
+            <label><span data-i18n="buyerName">姓名 / 公司名</span><span class="req">*</span></label>
+            <input name="buyerName" type="text" maxlength="300" autocomplete="name">
+            <div class="err" data-i18n="buyerNameErr">请填写姓名或公司名</div>
+          </div>
+          <div class="field" id="f-tin">
+            <label>TIN<span class="req">*</span></label>
+            <input name="tin" type="text" maxlength="14" autocomplete="off" placeholder="Example: C1234567890">
+            <div class="err" data-i18n="tinErr">请填写 TIN</div>
+          </div>
+          <div class="field" id="f-idType">
+            <label><span data-i18n="idType">识别号码类型</span><span class="req">*</span></label>
+            <select name="idType">
+              <option value="" data-i18n="selectOne">请选择</option>
+              <option>MyKad</option>
+              <option>Business Registration No.</option>
+              <option>Passport</option>
+              <option>MyPR / MyKAS</option>
+            </select>
+            <div class="err" data-i18n="idTypeErr">请选择识别号码类型</div>
+          </div>
+          <div class="field" id="f-idNo">
+            <label><span data-i18n="idNo">IC / BRN / Passport No.</span><span class="req">*</span></label>
+            <input name="idNo" type="text" maxlength="35" autocomplete="off">
+            <div class="err" data-i18n="idNoErr">请填写识别号码</div>
+          </div>
+          <div class="field">
+            <label>SST No.<span class="opt" data-i18n="optional">选填</span></label>
+            <input name="sstNo" type="text" maxlength="35" autocomplete="off" data-i18n-placeholder="sstPlaceholder" placeholder="没有可填 NA">
+          </div>
+          <div class="field" id="f-email">
+            <label>Email<span class="req">*</span></label>
+            <input name="email" type="email" maxlength="320" autocomplete="email">
+            <div class="err" data-i18n="emailErr">请填写正确 email</div>
+          </div>
+          <div class="field" id="f-phone">
+            <label><span data-i18n="phone">电话</span><span class="req">*</span></label>
+            <input name="phone" type="tel" maxlength="20" autocomplete="tel" placeholder="+60123456789">
+            <div class="err" data-i18n="phoneErr">电话只接受数字，前面可加 +，8 至 20 位</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <p class="section-title" data-i18n="addressSection">地址</p>
+        <div class="grid">
+          <div class="field full" id="f-address1">
+            <label>Address Line 1<span class="req">*</span></label>
+            <input name="address1" type="text" maxlength="150" autocomplete="address-line1">
+            <div class="err" data-i18n="addressErr">请填写地址</div>
+          </div>
+          <div class="field full">
+            <label>Address Line 2<span class="opt" data-i18n="optional">选填</span></label>
+            <input name="address2" type="text" maxlength="150" autocomplete="address-line2">
+          </div>
+          <div class="field" id="f-city">
+            <label>City<span class="req">*</span></label>
+            <input name="city" type="text" maxlength="50" autocomplete="address-level2">
+            <div class="err" data-i18n="cityErr">请填写 city</div>
+          </div>
+          <div class="field" id="f-state">
+            <label>State<span class="req">*</span></label>
+            <select name="state" autocomplete="address-level1">
+              <option value="" data-i18n="selectOne">请选择</option>
+              <option>Johor</option>
+              <option>Kedah</option>
+              <option>Kelantan</option>
+              <option>Melaka</option>
+              <option>Negeri Sembilan</option>
+              <option>Pahang</option>
+              <option>Penang</option>
+              <option>Perak</option>
+              <option>Perlis</option>
+              <option>Sabah</option>
+              <option>Sarawak</option>
+              <option>Selangor</option>
+              <option>Terengganu</option>
+              <option>W.P. Kuala Lumpur</option>
+              <option>W.P. Labuan</option>
+              <option>W.P. Putrajaya</option>
+              <option>Outside Malaysia</option>
+            </select>
+            <div class="err" data-i18n="stateErr">请选择 state</div>
+          </div>
+          <div class="field" id="f-postal">
+            <label>Postal Code<span class="req">*</span></label>
+            <input name="postalCode" type="text" maxlength="50" autocomplete="postal-code">
+            <div class="err" data-i18n="postalErr">Malaysia postal code 需要 5 位数字</div>
+          </div>
+          <div class="field" id="f-country">
+            <label>Country<span class="req">*</span></label>
+            <input name="country" type="text" value="Malaysia" maxlength="50" autocomplete="country-name">
+            <div class="err" data-i18n="countryErr">请填写 country</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <p class="section-title" data-i18n="transactionSection">交易资料</p>
+        <div class="grid">
+          <div class="field" id="f-purchaseDate">
+            <label><span data-i18n="purchaseDate">购买日期</span><span class="req">*</span></label>
+            <input name="purchaseDate" type="date">
+            <div class="err" data-i18n="purchaseDateErr">请选择购买日期</div>
+          </div>
+          <div class="field" id="f-amount">
+            <label><span data-i18n="totalAmount">总金额 RM</span><span class="req">*</span></label>
+            <input name="amount" type="number" min="0" step="0.01" inputmode="decimal">
+            <div class="err" data-i18n="amountErr">请填写大于 0 的金额</div>
+          </div>
+          <div class="field full" id="f-itemSummary">
+            <label><span data-i18n="itemSummary">购买项目 / Service</span><span class="req">*</span></label>
+            <textarea name="itemSummary" data-i18n-placeholder="itemSummaryPlaceholder" placeholder="例如 Kiddo Pad, P900, Heco Vision Pro, subscription renewal"></textarea>
+            <div class="err" data-i18n="itemSummaryErr">请填写购买项目</div>
+          </div>
+          <div class="field full" id="f-upload">
+            <label><span data-i18n="receiptUpload">上传 receipt / 付款截图</span><span class="req">*</span></label>
+            <div class="dropzone" id="receiptDropzone" role="button" tabindex="0">
+              <input id="receiptInput" type="file" accept="image/*,.pdf" multiple>
+              <div class="drop-title" data-i18n="uploadTitle">点击上传 receipt</div>
+              <div class="drop-hint" data-i18n="uploadHint">支持图片或 PDF，最多 3 个文件。</div>
+            </div>
+            <div class="upload-samples" aria-label="Upload examples">
+              <article class="sample-card">
+                <img src="assets/sample-receipt.svg" alt="Sample receipt showing merchant, date, and total amount">
+                <div>
+                  <b data-i18n="sampleReceiptTitle">Receipt / Invoice</b>
+                  <span data-i18n="sampleReceiptText">清楚看到商家、日期和金额。</span>
+                </div>
+              </article>
+              <article class="sample-card">
+                <img src="assets/sample-store-receipt.svg" alt="Sample store receipt showing receipt number, outlet, date, and total amount">
+                <div>
+                  <b data-i18n="sampleStoreReceiptTitle">门市 Receipt</b>
+                  <span data-i18n="sampleStoreReceiptText">清楚看到 receipt no.、门市、日期和金额。</span>
+                </div>
+              </article>
+            </div>
+            <div class="file-list" id="receiptList"></div>
+            <div class="err" data-i18n="receiptUploadErr">请至少上传一个 receipt 或付款截图</div>
+          </div>
+          <div class="field full">
+            <label><span data-i18n="notes">备注</span><span class="opt" data-i18n="optional">选填</span></label>
+            <textarea name="customerNote" data-i18n-placeholder="notesPlaceholder" placeholder="可填写 delivery note、company branch、extra request"></textarea>
+          </div>
+          <div class="field full" id="f-consent">
+            <label class="consent">
+              <input name="consent" type="checkbox">
+              <span data-i18n="consentText">我确认以上资料正确，并同意 DCTB 使用这些资料处理 e-Invoice。</span>
+            </label>
+            <div class="err" data-i18n="consentErr">需要确认资料授权</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="actions">
+          <button class="btn" type="submit" id="submitBtn" data-i18n="submitButton">提交资料</button>
+          <button class="btn secondary" type="button" id="resetFormBtn" data-i18n="resetButton">清空表单</button>
+        </div>
+      </section>
+    </form>
+
+    <aside class="panel workflow" aria-label="Manual e-Invoice workflow">
+      <div class="workflow-visual" aria-hidden="true">
+        <div class="doc-card">
+          <div class="doc-line"></div><div class="doc-line"></div><div class="doc-line short"></div>
+          <div class="qr"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        </div>
+        <div class="doc-card">
+          <div class="doc-line"></div><div class="doc-line short"></div><div class="doc-line"></div>
+          <div class="qr"><span></span><span></span><span></span><span></span></div>
+        </div>
+        <div class="doc-card">
+          <div class="doc-line"></div><div class="doc-line"></div><div class="doc-line short"></div>
+          <div class="qr"><span></span><span></span><span></span><span></span><span></span></div>
+        </div>
+      </div>
+      <ul class="workflow-list">
+        <li><span class="num">1</span><span data-i18n="step1">提交订单或门市购买资料。</span></li>
+        <li><span class="num">2</span><span data-i18n="step2">我们核对付款、订单和买家资料。</span></li>
+        <li><span class="num">3</span><span data-i18n="step3">内部团队登入 MyInvois Portal 手动提交。</span></li>
+        <li><span class="num">4</span><span data-i18n="step4">e-Invoice 完成后通过 email 发给你。</span></li>
+      </ul>
+    </aside>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="shared.js"></script>
+<script src="customer.js"></script>
+</body>
 </html>

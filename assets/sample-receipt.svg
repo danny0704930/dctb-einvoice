@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="360" viewBox="0 0 520 360" role="img" aria-labelledby="title desc">
+  <title id="title">Sample receipt</title>
+  <desc id="desc">A sample receipt showing merchant name, date, items, and total amount.</desc>
+  <rect width="520" height="360" fill="#f6f8fb"/>
+  <rect x="120" y="30" width="280" height="300" rx="8" fill="#ffffff" stroke="#d8e1e8"/>
+  <path d="M120 58 l16 -14 16 14 16 -14 16 14 16 -14 16 14 16 -14 16 14 16 -14 16 14 16 -14 16 14 16 -14 16 14 16 -14 16 14 16 -14 16 14" fill="none" stroke="#d8e1e8" stroke-width="2"/>
+  <text x="260" y="78" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#16212a">SAMPLE RECEIPT</text>
+  <text x="150" y="112" font-family="Arial, sans-serif" font-size="13" fill="#637381">Merchant / Outlet</text>
+  <rect x="150" y="122" width="220" height="10" rx="5" fill="#e8eef2"/>
+  <text x="150" y="156" font-family="Arial, sans-serif" font-size="13" fill="#637381">Date</text>
+  <rect x="208" y="146" width="105" height="10" rx="5" fill="#e8eef2"/>
+  <text x="150" y="190" font-family="Arial, sans-serif" font-size="13" fill="#637381">Items</text>
+  <rect x="150" y="202" width="210" height="8" rx="4" fill="#e8eef2"/>
+  <rect x="150" y="220" width="180" height="8" rx="4" fill="#e8eef2"/>
+  <line x1="150" y1="254" x2="370" y2="254" stroke="#d8e1e8"/>
+  <text x="150" y="282" font-family="Arial, sans-serif" font-size="16" font-weight="700" fill="#16212a">Total Amount</text>
+  <rect x="276" y="269" width="94" height="16" rx="8" fill="#14b8a6" opacity=".22"/>
+</svg>

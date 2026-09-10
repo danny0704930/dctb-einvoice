@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="360" viewBox="0 0 520 360" role="img" aria-labelledby="title desc">
+  <title id="title">Sample payment screenshot</title>
+  <desc id="desc">A sample payment screenshot showing paid status, date, reference, and amount.</desc>
+  <rect width="520" height="360" fill="#f6f8fb"/>
+  <rect x="138" y="24" width="244" height="312" rx="26" fill="#16212a"/>
+  <rect x="154" y="50" width="212" height="260" rx="18" fill="#ffffff"/>
+  <circle cx="260" cy="102" r="28" fill="#14b8a6" opacity=".2"/>
+  <path d="M248 101 l8 8 18 -20" fill="none" stroke="#0f766e" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="260" y="148" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#16212a">PAYMENT SUCCESSFUL</text>
+  <text x="188" y="188" font-family="Arial, sans-serif" font-size="13" fill="#637381">Amount</text>
+  <rect x="252" y="178" width="82" height="12" rx="6" fill="#14b8a6" opacity=".25"/>
+  <text x="188" y="222" font-family="Arial, sans-serif" font-size="13" fill="#637381">Date</text>
+  <rect x="252" y="212" width="92" height="10" rx="5" fill="#e8eef2"/>
+  <text x="188" y="254" font-family="Arial, sans-serif" font-size="13" fill="#637381">Reference</text>
+  <rect x="252" y="244" width="76" height="10" rx="5" fill="#e8eef2"/>
+</svg>
