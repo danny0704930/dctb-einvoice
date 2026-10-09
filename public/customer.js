@@ -23,21 +23,36 @@ function initCustomer(){
 }
 
 // OMS 给客人的链接（?o=码）：订单资料预填并锁住，客人检查 / 修改买家资料、填 TIN 后提交
+const LINK_KEYS = {invalid:'linkInvalid', done:'linkDone', expired:'linkExpired', unavailable:'linkUnavailable'};
+let linkView = null;
+
+function renderLinkView(){
+  if(!linkView) return;
+  if(linkView.type === 'banner'){
+    document.getElementById('linkBanner').innerHTML = t('linkBanner').replace('{no}', escapeHtml(linkView.no));
+  } else {
+    successBox.textContent = linkView.key ? t(linkView.key) : linkView.fallback;
+  }
+}
+
 async function initLinkMode(){
   form.hidden = true;
   document.body.classList.add('link-mode');
-  successBox.textContent = t('linkLoading');
+  linkView = {type:'msg', key:'linkLoading'};
+  renderLinkView();
   successBox.classList.add('show');
   try {
     const res = await fetch(`${OMS_API}?einv=${encodeURIComponent(linkToken)}`);
     const data = await res.json().catch(() => ({}));
     if(!res.ok || !data.ok){
-      successBox.textContent = data.error || t('linkLoadFailed');
+      linkView = {type:'msg', key:LINK_KEYS[data.code] || (data.error ? '' : 'linkLoadFailed'), fallback:data.error};
+      renderLinkView();
       return;
     }
     applyLinkOrder(data);
   } catch(err) {
-    successBox.textContent = t('linkLoadFailed');
+    linkView = {type:'msg', key:'linkLoadFailed'};
+    renderLinkView();
   }
 }
 
@@ -56,11 +71,11 @@ function applyLinkOrder({order, prefill}){
   set('purchaseDate', order.purchaseDate);
   set('amount', order.amount);
   set('itemSummary', order.itemSummary);
-  ['buyerName','phone','email','address1','city','state','postalCode','country'].forEach(k => { if(prefill[k]) set(k, prefill[k]); });
+  ['buyerName','phone','email','address1','address2','city','state','postalCode','country'].forEach(k => { if(prefill[k]) set(k, prefill[k]); });
   ['purchaseDate','amount','itemSummary'].forEach(k => { form.elements[k].readOnly = true; });
-  const banner = document.getElementById('linkBanner');
-  banner.innerHTML = t('linkBanner').replace('{no}', escapeHtml(order.receiptNo));
-  banner.hidden = false;
+  linkView = {type:'banner', no:order.receiptNo};
+  renderLinkView();
+  document.getElementById('linkBanner').hidden = false;
   successBox.classList.remove('show');
   form.hidden = false;
 }
@@ -72,7 +87,7 @@ async function submitViaLink(payload){
   const data = await res.json().catch(() => ({}));
   if(!res.ok || !data.ok){
     const error = new Error(data.error || 'submit failed');
-    error.userMessage = data.error;
+    error.userMessage = LINK_KEYS[data.code] ? t(LINK_KEYS[data.code]) : data.error;
     throw error;
   }
   payload.requestId = data.requestId;
@@ -118,6 +133,7 @@ function bindCustomerEvents(){
 
   window.addEventListener('languagechange', () => {
     renderReceiptFiles();
+    renderLinkView();
     if(successBox.classList.contains('show') && successBox.dataset.requestId) {
       showSuccess({requestId: successBox.dataset.requestId});
     }
