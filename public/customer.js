@@ -57,6 +57,11 @@ async function initLinkMode(){
 }
 
 function applyLinkOrder({order, prefill}){
+  if(order.company && order.company !== 'DCTB'){
+    const heading = document.querySelector('h1[data-i18n="customerTitle"]');
+    if(heading){ heading.removeAttribute('data-i18n'); heading.textContent = `${order.company} e-Invoice Request`; }
+    document.title = `${order.company} e-Invoice Request`;
+  }
   const set = (name, value) => { if(form.elements[name]) form.elements[name].value = value ?? ''; };
   form.elements.channel.value = order.channel;
   updateChannelBlocks();
