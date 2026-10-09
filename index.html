@@ -40,7 +40,9 @@
         </div>
       </div>
 
-      <section class="section">
+      <div class="link-banner" id="linkBanner" hidden></div>
+
+      <section class="section" data-link-hide>
         <p class="section-title" data-i18n="sourceSection">来源</p>
         <div class="choice-row" role="radiogroup" aria-label="Request channel">
           <label class="choice">
@@ -217,7 +219,7 @@
             <textarea name="itemSummary" data-i18n-placeholder="itemSummaryPlaceholder" placeholder="例如 Kiddo Pad, P900, Heco Vision Pro, subscription renewal"></textarea>
             <div class="err" data-i18n="itemSummaryErr">请填写购买项目</div>
           </div>
-          <div class="field full" id="f-upload">
+          <div class="field full" id="f-upload" data-link-hide>
             <label><span data-i18n="receiptUpload">上传 receipt / 付款截图</span><span class="req">*</span></label>
             <div class="dropzone" id="receiptDropzone" role="button" tabindex="0">
               <input id="receiptInput" type="file" accept="image/*,.pdf" multiple>

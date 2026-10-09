@@ -5,6 +5,9 @@ const JPEG_QUALITY = 0.72;
 
 let receiptFiles = [];
 
+const OMS_API = 'https://dashboard.dctb.my/api/oms';
+const linkToken = new URLSearchParams(location.search).get('o') || '';
+
 const form = document.getElementById('einvoiceForm');
 const submitBtn = document.getElementById('submitBtn');
 const successBox = document.getElementById('successBox');
@@ -16,6 +19,63 @@ function initCustomer(){
   initCommon();
   bindCustomerEvents();
   updateChannelBlocks();
+  if(linkToken) initLinkMode();
+}
+
+// OMS 给客人的链接（?o=码）：订单资料预填并锁住，客人检查 / 修改买家资料、填 TIN 后提交
+async function initLinkMode(){
+  form.hidden = true;
+  document.body.classList.add('link-mode');
+  successBox.textContent = t('linkLoading');
+  successBox.classList.add('show');
+  try {
+    const res = await fetch(`${OMS_API}?einv=${encodeURIComponent(linkToken)}`);
+    const data = await res.json().catch(() => ({}));
+    if(!res.ok || !data.ok){
+      successBox.textContent = data.error || t('linkLoadFailed');
+      return;
+    }
+    applyLinkOrder(data);
+  } catch(err) {
+    successBox.textContent = t('linkLoadFailed');
+  }
+}
+
+function applyLinkOrder({order, prefill}){
+  const set = (name, value) => { if(form.elements[name]) form.elements[name].value = value ?? ''; };
+  form.elements.channel.value = order.channel;
+  updateChannelBlocks();
+  if(order.channel === 'Online'){
+    const known = Array.from(form.elements.onlinePlatform.options).some(o => o.value === order.source);
+    set('onlinePlatform', known ? order.source : 'Other');
+    set('orderNo', order.receiptNo);
+  } else {
+    set('outlet', order.source);
+    set('receiptNo', order.receiptNo);
+  }
+  set('purchaseDate', order.purchaseDate);
+  set('amount', order.amount);
+  set('itemSummary', order.itemSummary);
+  ['buyerName','phone','email','address1','city','state','postalCode','country'].forEach(k => { if(prefill[k]) set(k, prefill[k]); });
+  ['purchaseDate','amount','itemSummary'].forEach(k => { form.elements[k].readOnly = true; });
+  const banner = document.getElementById('linkBanner');
+  banner.innerHTML = t('linkBanner').replace('{no}', escapeHtml(order.receiptNo));
+  banner.hidden = false;
+  successBox.classList.remove('show');
+  form.hidden = false;
+}
+
+async function submitViaLink(payload){
+  const keys = ['buyerType','buyerName','tin','idType','idNo','sstNo','email','phone','address1','address2','city','state','postalCode','country'];
+  const buyer = Object.fromEntries(keys.map(k => [k, payload[k]]));
+  const res = await fetch(OMS_API, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify({action:'einvoicePublicSubmit', token:linkToken, buyer})});
+  const data = await res.json().catch(() => ({}));
+  if(!res.ok || !data.ok){
+    const error = new Error(data.error || 'submit failed');
+    error.userMessage = data.error;
+    throw error;
+  }
+  payload.requestId = data.requestId;
 }
 
 function bindCustomerEvents(){
@@ -248,7 +308,7 @@ function validateForm(){
   const amount = Number(fd.get('amount'));
   if(!Number.isFinite(amount) || amount <= 0){ setError('f-amount'); ok = false; }
 
-  if(!receiptFiles.length){ setError('f-upload'); ok = false; }
+  if(!linkToken && !receiptFiles.length){ setError('f-upload'); ok = false; }
 
   if(!fd.get('consent')){ setError('f-consent'); ok = false; }
   return ok;
@@ -272,7 +332,9 @@ async function submitRequest(event){
   submitBtn.disabled = true;
   submitBtn.textContent = t('submitLoading');
   try {
-    if(isRemoteConfigured()){
+    if(linkToken){
+      await submitViaLink(payload);
+    } else if(isRemoteConfigured()){
       await fetch(EINVOICE_CONFIG.APPS_SCRIPT_URL, {
         method:'POST',
         mode:'no-cors',
@@ -287,13 +349,18 @@ async function submitRequest(event){
       };
       saveLocalRequest(localPayload);
     }
-    form.reset();
-    receiptFiles = [];
-    renderReceiptFiles();
-    updateChannelBlocks();
+    if(linkToken){
+      form.hidden = true;
+      document.getElementById('linkBanner').hidden = true;
+    } else {
+      form.reset();
+      receiptFiles = [];
+      renderReceiptFiles();
+      updateChannelBlocks();
+    }
     showSuccess(payload);
   } catch(err) {
-    toast(t('submitFailed'));
+    toast(err.userMessage || t('submitFailed'));
   } finally {
     submitBtn.disabled = false;
     submitBtn.textContent = t('submitButton');

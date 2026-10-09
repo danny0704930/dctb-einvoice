@@ -393,3 +393,7 @@ tr.selected{background:rgba(20,184,166,.08)}
   .doc-card:nth-child(1){left:18px}
   .doc-card:nth-child(2){left:104px}
 }
+
+.link-banner{border:1px solid var(--teal);background:rgba(20,184,166,.08);border-radius:8px;padding:12px 14px;margin:0 0 14px;font-size:13.5px;line-height:1.55}
+.link-mode [data-link-hide],.link-mode .channel-block,.link-mode #resetFormBtn{display:none !important}
+.link-mode input[readonly],.link-mode textarea[readonly]{background:var(--surface-2);color:var(--muted);cursor:not-allowed}
