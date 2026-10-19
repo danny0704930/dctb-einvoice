@@ -29,7 +29,12 @@ let linkView = null;
 function renderLinkView(){
   if(!linkView) return;
   if(linkView.type === 'banner'){
-    document.getElementById('linkBanner').innerHTML = t('linkBanner').replace('{no}', escapeHtml(linkView.no));
+    const meta = [
+      [t('linkOrderLabel'), linkView.no],
+      [t('linkBranchLabel'), linkView.branch],
+      [t('linkCompanyLabel'), linkView.company]
+    ].filter(([, value]) => value).map(([label, value]) => `<span class="link-chip"><i>${escapeHtml(label)}</i> ${escapeHtml(value)}</span>`).join('');
+    document.getElementById('linkBanner').innerHTML = t('linkBanner').replace('{no}', escapeHtml(linkView.no)) + (meta ? `<div class="link-meta">${meta}</div>` : '');
   } else {
     successBox.textContent = linkView.key ? t(linkView.key) : linkView.fallback;
   }
@@ -78,7 +83,7 @@ function applyLinkOrder({order, prefill}){
   set('itemSummary', order.itemSummary);
   ['buyerName','phone','email','address1','address2','city','state','postalCode','country'].forEach(k => { if(prefill[k]) set(k, prefill[k]); });
   ['purchaseDate','amount','itemSummary'].forEach(k => { form.elements[k].readOnly = true; });
-  linkView = {type:'banner', no:order.receiptNo};
+  linkView = {type:'banner', no:order.receiptNo, branch:order.branch, company:order.company};
   renderLinkView();
   document.getElementById('linkBanner').hidden = false;
   successBox.classList.remove('show');
